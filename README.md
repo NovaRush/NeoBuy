@@ -1,87 +1,147 @@
-# 🐍 The Hissing Mambas - Patrol 3
+# NeoBuy Marketplace
 
-A modern, responsive website for the Hissing Mambas Scout Patrol.
+A complete marketplace platform with buyer, seller, and admin roles. Built with a static HTML/CSS/JavaScript frontend and a Node.js Express backend with JSON file storage.
 
 ## Features
 
-- **Responsive Design**: Mobile-first approach that works on all devices
-- **Patrol Chant Section**: Animated call-and-response chant display
-- **Members Grid**: Card-based layout showcasing all patrol members with their roles
-- **Sticky Navigation**: Easy navigation with smooth scroll animations
-- **Modern Styling**: Green and black scouting theme with smooth animations
+- **Buyer Platform**: Signup, login, browse products, purchase with NeoPoints, view order history
+- **Seller Platform**: Signup, login, submit products for approval, track sales and orders
+- **Admin Dashboard**: Manage buyers and sellers, approve/reject products, credit points, view stats
+- **Real-time Stats**: Homepage displays live marketplace counts (refreshes hourly)
+- **Authentication**: Secure login with username and password validation
+- **Data Persistence**: All data stored server-side in JSON files
 
 ## Project Structure
 
 ```
-├── index.html       # Main HTML file
-├── style.css        # Stylesheet with responsive design
-├── script.js        # JavaScript for animations and interactions
-├── server.js        # Local Node.js server (for development)
-├── CNAME            # Custom domain configuration
-└── README.md        # This file
+NeoBuy/
+├── Neobuy.html                    # Marketplace frontend (single HTML file)
+└── neobuy-backend/
+    ├── server.js                  # Express server entry point
+    ├── package.json               # Node.js dependencies
+    ├── utils/
+    │   └── jsonStorage.js         # JSON file I/O utilities
+    ├── routes/
+    │   ├── buyers.js              # Buyer signup/login routes
+    │   ├── sellers.js             # Seller signup/login routes
+    │   ├── products.js            # Product routes (submit/approve/reject)
+    │   ├── orders.js              # Order processing routes
+    │   └── admin.js               # Admin management routes
+    └── data/
+        ├── buyers.json            # Buyer accounts
+        ├── sellers.json           # Seller accounts
+        ├── approvedProducts.json  # Live marketplace products
+        ├── pendingProducts.json   # Products awaiting approval
+        └── orders.json            # Purchase history
 ```
 
-## Local Development
+## Quick Start
 
-To run the website locally:
+### 1. Start the Backend
+
+Open a terminal and run:
 
 ```bash
-node server.js
+cd neobuy-backend
+npm install
+npm start
 ```
 
-Then open your browser to `http://localhost:8000`
+The backend API runs on `http://localhost:3000/api`
 
-## Deployment to GitHub Pages
+### 2. Open the Frontend
 
-1. **Create a GitHub repository**:
-   - Go to [github.com/new](https://github.com/new)
-   - Create a new repository named `the-hissing-mambas` (or any name you prefer)
+Open `NeoBuy/Neobuy.html` in your browser using:
+- **VS Code Live Server** extension, OR
+- **Local server**: `python -m http.server 5500`, then visit `http://localhost:5500/NeoBuy/Neobuy.html`
 
-2. **Initialize Git and push your code**:
-   ```bash
-   git init
-   git add .
-   git commit -m "Initial commit: Hissing Mambas website"
-   git branch -M main
-   git remote add origin https://github.com/YOUR_USERNAME/the-hissing-mambas.git
-   git push -u origin main
-   ```
+## User Roles
 
-3. **Enable GitHub Pages**:
-   - Go to your repository settings
-   - Scroll to "Pages" section
-   - Select "Deploy from a branch"
-   - Choose `main` branch and save
+### Buyer
+- Sign up with username, password, real name, grade & section, GEMS account
+- Start with 0 NeoPoints
+- Browse approved products
+- Purchase products using NeoPoints
+- View purchase history
 
-4. **Configure Custom Domain** (requires domain ownership):
-   - In repository settings → Pages section
-   - Add custom domain: `the-hissing-mambas.oow-scouts.com`
-   - GitHub will create/update the CNAME file
-   - Add DNS records to your domain registrar pointing to GitHub Pages
+### Seller
+- Sign up with username and password
+- Submit products for admin approval
+- View pending and approved products
+- Track orders and revenue
 
-5. **DNS Configuration**:
-   After purchasing `oow-scouts.com`, add these DNS records to your registrar:
-   ```
-   Type: CNAME
-   Name: the-hissing-mambas
-   Value: YOUR_USERNAME.github.io
-   ```
+### Admin
+- Login with password: `NeoAdmin123`
+- View all buyers and sellers with identity information
+- Credit/adjust buyer NeoPoints
+- Approve or reject pending products
+- Delete users and products
+- View marketplace statistics
+- Reset all data
 
-## Website Sections
+## API Endpoints
 
-- **Header**: Welcome section with patrol name and slogan
-- **Chant**: Interactive patrol chant call-and-response
-- **Members**: All 12 patrol members with their roles (Patrol Leader, Deputy Patrol Leader, or Patrol Member)
-- **About**: Information about the patrol
-- **Footer**: Patrol branding
+### Buyers
+- `POST /api/buyers/signup` — create buyer account
+- `POST /api/buyers/login` — buyer login
 
-## Customization
+### Sellers
+- `POST /api/sellers/signup` — create seller account
+- `POST /api/sellers/login` — seller login
 
-Feel free to modify:
-- Colors in `style.css`
-- Content in `index.html`
-- Animations in `script.js`
+### Products
+- `GET /api/products` — get approved products
+- `POST /api/products/submit` — seller submits product
+- `GET /api/products/pending` — get pending products (admin)
+- `POST /api/products/approve` — approve product (admin)
+- `POST /api/products/reject` — reject product (admin)
 
----
+### Orders
+- `POST /api/orders/buy` — buyer purchases product
+- `GET /api/orders` — get all orders
 
-**Strike Fast, Strike First!** ⚡ **We strike and win!** 🐍
+### Admin
+- `POST /api/admin/login` — admin login
+- `GET /api/admin/buyers` — list all buyers
+- `GET /api/admin/sellers` — list all sellers
+- `POST /api/admin/credit-points` — add points to buyer
+- `POST /api/admin/adjust-points` — adjust buyer points
+- `DELETE /api/admin/delete-buyer/:username` — remove buyer
+- `DELETE /api/admin/delete-seller/:username` — remove seller
+- `DELETE /api/admin/remove-product/:id` — remove product
+- `POST /api/admin/reset-data` — reset all data
+- `GET /api/stats` — marketplace statistics
+
+### Stats
+- `GET /api/stats` — get buyer/seller/product/order counts
+
+## Authentication
+
+- Buyer/Seller: Username and password (exact match required)
+- Admin: Password only (`NeoAdmin123`)
+- Sessions stored in browser memory (not localStorage) for security
+
+## Data Storage
+
+All data persists in JSON files in `neobuy-backend/data/`:
+- Buyer account info, GEMS accounts, NeoPoints balance
+- Seller account info and products
+- Approved and pending products
+- Order history with buyer and seller information
+
+## Notes
+
+- This project uses plain-text passwords for demonstration only
+- New buyers start with 0 NeoPoints
+- Products require admin approval before appearing in the marketplace
+- Admin can manually credit or adjust buyer NeoPoints
+- Data persists across page refreshes and browser sessions
+- Homepage marketplace stats refresh automatically every hour
+
+## Development
+
+To modify the project:
+
+1. **Frontend**: Edit `NeoBuy/Neobuy.html` (HTML/CSS/JavaScript in one file)
+2. **Backend**: Edit files in `neobuy-backend/routes/` and restart the server
+3. **Data**: Manually edit JSON files in `neobuy-backend/data/` if needed (stop server first)
